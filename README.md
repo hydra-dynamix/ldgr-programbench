@@ -1,5 +1,9 @@
 # ldgr-programbench
 
-Open ProgramBench-facing LDGR adapter placeholder.
+`ldgr-programbench` is reserved for the public ProgramBench-facing LDGR integration slice.
 
-This repository is reserved for the narrow Apache-2.0 ProgramBench integration slice. It is intentionally separate from commercial `ldgr-bench` work.
+There is no released adapter binary in this repository yet. The intended scope is narrow: public fixtures, documentation, and tooling that help ProgramBench-style benchmark workflows interoperate with LDGR without pulling in unrelated benchmark infrastructure.
+
+## Status
+
+Pre-release placeholder. Use the main LDGR components directly until this repository grows a concrete adapter surface.
