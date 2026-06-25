@@ -2,8 +2,25 @@
 
 `ldgr-programbench` is reserved for the public ProgramBench-facing LDGR integration slice.
 
-There is no released adapter binary in this repository yet. The intended scope is narrow: public fixtures, documentation, and tooling that help ProgramBench-style benchmark workflows interoperate with LDGR without pulling in unrelated benchmark infrastructure.
+The initial public release is intentionally small. Use the main LDGR tools directly while this repository grows concrete ProgramBench adapter commands, fixtures, and workflow documentation.
 
-## Status
+## Current scope
 
-Pre-release placeholder. Use the main LDGR components directly until this repository grows a concrete adapter surface.
+- Public home for future ProgramBench/LDGR integration work.
+- Narrow benchmark-facing examples and scripts once they are ready.
+- No separate adapter binary is released from this repository yet.
+
+## Start with LDGR
+
+```sh
+cargo install --git https://github.com/hydra-dynamix/ldgr-core
+cargo install --git https://github.com/hydra-dynamix/agentctl
+```
+
+Or use the integration installer:
+
+```sh
+git clone https://github.com/hydra-dynamix/ldgr
+cd ldgr
+./install.sh
+```
