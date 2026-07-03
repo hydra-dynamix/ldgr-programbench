@@ -7,8 +7,10 @@ The initial public release is intentionally small. Use the main LDGR tools direc
 ## Current scope
 
 - Public home for future ProgramBench/LDGR integration work.
-- Narrow benchmark-facing examples and scripts once they are ready.
+- Fixture-backed LDGR evidence example for one synthetic ProgramBench-shaped task.
 - No separate adapter binary is released from this repository yet.
+- See [docs/public-scope.md](docs/public-scope.md) for the public slice boundary, exclusions, and validation expectations.
+- Start with [docs/examples/public-fixture-workflow.md](docs/examples/public-fixture-workflow.md) for exact commands, generated records, and smoke validation.
 
 ## Start with LDGR
 

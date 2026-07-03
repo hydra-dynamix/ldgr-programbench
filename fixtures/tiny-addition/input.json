@@ -1,0 +1,23 @@
+{
+  "schema": "ldgr-programbench.public-fixture.v1",
+  "fixture_id": "tiny-addition-001",
+  "title": "Tiny addition ProgramBench-shaped proof fixture",
+  "task": {
+    "language": "python",
+    "prompt": "Implement add(a, b) so it returns the arithmetic sum of two integers.",
+    "entrypoint": "add"
+  },
+  "candidate_result": {
+    "source": "def add(a, b):\n    return a + b\n",
+    "cases": [
+      {"name": "positive integers", "input": [2, 3], "expected": 5, "actual": 5},
+      {"name": "includes zero", "input": [0, 7], "expected": 7, "actual": 7},
+      {"name": "negative integer", "input": [-2, 5], "expected": 3, "actual": 3}
+    ]
+  },
+  "public_boundary": {
+    "contains_private_benchmark": false,
+    "requires_commercial_ldgr_bench": false,
+    "notes": "Synthetic fixture for LDGR evidence-shape demonstration only; not a ProgramBench benchmark task or score."
+  }
+}
