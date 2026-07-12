@@ -4,6 +4,12 @@ title = "ProgramBench historical reproduction adapter"
 core_version = "0.1"
 aliases = ["ldgr-programbench"]
 
+[profile]
+loop_prompt_path = "docs/historical/reproduction-contract.md"
+default_milestone_template = "docs/historical/classifications.json"
+spec_artifact_path = "docs/historical/source-manifest.json"
+readiness_policy = "Custody must verify before reproduction; invalid and unresolved runs remain visible; no output may be interpreted as an official submission, clean-room run, independent benchmark, or general model score."
+
 [[commands]]
 namespace = "programbench"
 argv = ["ldgr-programbench"]
@@ -16,3 +22,21 @@ capabilities = ["dispatch", "help"]
 usage = "ldgr programbench <verify|reproduce|report> [options]"
 summary = "Revalidate historical on-host validator-visible ProgramBench evidence."
 details = "This is not an official submission or clean-room benchmark surface."
+
+[[target_profiles]]
+slug = "programbench-historical-reproduction"
+title = "Historical ProgramBench reproduction"
+target_type = "bounded-reproduction"
+description = "On-host validator-visible revalidation of four frozen historical submissions."
+
+[[target_profiles.probes]]
+slug = "custody"
+title = "Historical custody"
+description = "Every declared source artifact matches its frozen SHA-256 digest."
+validation_hint = "ldgr programbench verify --archive-root <archive>"
+
+[[target_profiles.probes]]
+slug = "bounded-interpretation"
+title = "Bounded interpretation"
+description = "Reports retain invalidated runs and prohibit official, clean-room, independent, and general-score interpretations."
+validation_hint = "ldgr programbench report"
