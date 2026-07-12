@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-12",
+  "source_root_example": "/mnt/d/apps/benchmarks/successful-runs/20260613-archive",
+  "root_is_configurable": true,
+  "artifacts": [
+    {"path":"MANIFEST.md","sha256":"be59f41c381cf2cbc50eb6d46586e84a563820b624758a8cb899c77ad207c684","category":"recorded"},
+    {"path":"TEAM_UPDATE.md","sha256":"1d458bcfe376bb4affedd0196ae11ef1ef4f091339c3ac1e499b3d8b5956f275","category":"recorded"},
+    {"path":"DEBRIEF.md","sha256":"5ca0ae4fd6f247510583444593dc548e1f78ffbf9447ebec3cf0a0c41614c07e","category":"recorded"},
+    {"path":"ldgr-bench-reports/archived-success-vs-current-cleanroom.md","sha256":"2d9235930102b4cbc3342d3214de4b5db17b52d8f61475e6b9f2a297696118b8","category":"recorded"},
+    {"path":"runs-main/sharkdp__hyperfine.327d5f4/sharkdp__hyperfine.327d5f4.eval.json","sha256":"6250b56d7b915f5be1dae87beef6ab977e9720224a14d397b45db70aad426c1e","category":"recorded"},
+    {"path":"runs-main/sharkdp__hyperfine.327d5f4/submission.tar.gz","sha256":"1558ffcf480ee7e898e4806519123c4de02ce9e578a3343ea9063cb6b872d356","category":"recorded"},
+    {"path":"runs-main/wfxr__code-minimap.0ddeea5/wfxr__code-minimap.0ddeea5.eval.json","sha256":"06112ad6a8f4a86f874f82dfc22809747f71facfb714c363a1fed1174f6b9c71","category":"recorded"},
+    {"path":"runs-main/wfxr__code-minimap.0ddeea5/submission.tar.gz","sha256":"2e1a19e78ae10db25c41b7b004fc41833210881da9ecad2c4ff8be5937d3b369","category":"recorded"},
+    {"path":"../20260613-clean-team-update/runs-main/google__brotli.b3dc9cc/google__brotli.b3dc9cc.eval.json","sha256":"7f71d5f94191f555175fff22b7f106d3c2c2a68fc9fe47b4042c7de4b68f2b18","category":"recorded"},
+    {"path":"../20260613-clean-team-update/runs-main/google__brotli.b3dc9cc/submission.tar.gz","sha256":"2963f1bd11a50b162f9ac18c4ff30d0359f23f8f75fcc3b66bdcdd587ae2bc03","category":"recorded"},
+    {"path":"runs-main/yaa110__nomino.f892499/yaa110__nomino.f892499.eval.json","sha256":"7211d98f62d49c504224820bd99e6dcba0ebcb5685ccfd499b906d43b30555df","category":"recorded"},
+    {"path":"runs-main/yaa110__nomino.f892499/submission.tar.gz","sha256":"682dae256438f58f081eb9fef83d9a86b58259577e9cdd253641488cd7e7ef39","category":"recorded"}
+  ],
+  "missing": [
+    "immutable repository revision: source repository has no commits",
+    "complete container image digests for every historical run",
+    "cryptographic signing timestamp predating this revalidation"
+  ]
+}

@@ -4,12 +4,7 @@
 
 ## Current implementation state
 
-As of this scope statement, the repository is intentionally a placeholder plus documentation:
-
-- no standalone `ldgr-programbench` adapter binary is released;
-- no `adapter.toml`, installed profile, or ProgramBench-specific LDGR command surface is present;
-- users should install and run the main LDGR tools directly while this repository accumulates public examples, fixtures, and scripts;
-- commercial benchmark behavior remains outside this repository.
+The repository now contains the open `ldgr-programbench` adapter binary, canonical `ldgr programbench` domain, typed harness resources, custody verifier, frozen historical classifications, on-host reproduction command, and bounded report command. Commercial benchmark automation remains outside this repository.
 
 This keeps the public proof slice honest: anything documented here must be runnable with open LDGR surfaces or explicitly marked as planned.
 
@@ -32,7 +27,7 @@ The public slice should prefer small, inspectable assets that can be run without
 5. Smoke checks proving that the documented examples still run against current public LDGR commands.
 6. Documentation explaining how ProgramBench proof evidence maps onto LDGR records.
 
-If a future adapter binary is added, it should start as a convenience wrapper around these public flows rather than a new source of hidden policy.
+The adapter is a convenience wrapper around inspectable public flows and contains no hidden scoring or entitlement policy.
 
 ## Explicit exclusions
 

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "rule": "leakage-rule.md",
+  "runs": [
+    {"instance":"sharkdp__hyperfine.327d5f4","status":"valid_non_cleanroom","basis":["retained submission and final eval","DEBRIEF provenance narrative","not present in later reclassified failures"]},
+    {"instance":"wfxr__code-minimap.0ddeea5","status":"valid_non_cleanroom","basis":["retained submission and final eval","MANIFEST and TEAM_UPDATE","not present in later reclassified failures"]},
+    {"instance":"google__brotli.b3dc9cc","status":"valid_non_cleanroom","basis":["retained submission and final eval","clean-team-update custody bundle","predates the operator-observed upstream-source pivot"]},
+    {"instance":"yaa110__nomino.f892499","status":"valid_non_cleanroom","basis":["retained submission and final eval","DEBRIEF provenance narrative","not present in later reclassified failures"]},
+    {"instance":"kisielk__errcheck.dacab89","status":"invalid_source_leakage","basis":["moved to failed-runs/kisielk__errcheck.dacab89-reclassified-20260614T032322Z"]},
+    {"instance":"psampaz__go-mod-outdated.bb79367","status":"invalid_source_leakage","basis":["moved to failed-runs/psampaz__go-mod-outdated.bb79367-reclassified-20260614T032322Z"]},
+    {"instance":"wfxr__csview.8ac4de0","status":"invalid_source_leakage","basis":["moved to failed-runs/wfxr__csview.8ac4de0-reclassified-20260614T032322Z"]},
+    {"instance":"ajeetdsouza__zoxide.67ca1bc","status":"invalid_source_leakage","basis":["operator-observed upstream-source pivot","retained candidate contains bulk exact init-template outputs and an explicit prior-probe source-artifact lineage"]},
+    {"instance":"boyter__scc.515f91c","status":"invalid_source_leakage","basis":["MANIFEST explicitly records evaluator goldens/test-name crib notes"]},
+    {"instance":"doxygen__doxygen.966d98e","status":"invalid_source_leakage","basis":["MANIFEST explicitly records evaluator-aware contaminated batch"]},
+    {"instance":"tomnomnom__gron.88a6234","status":"invalid_source_leakage","basis":["archived-success-vs-current-cleanroom records PYTEST_CURRENT_TEST and evaluator-temp-path shims"]}
+  ],
+  "counts":{"valid_non_cleanroom":4,"invalid_source_leakage":7,"unresolved":0}
+}

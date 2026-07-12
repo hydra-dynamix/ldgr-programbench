@@ -1,0 +1,18 @@
+[adapter]
+slug = "programbench"
+title = "ProgramBench historical reproduction adapter"
+core_version = "0.1"
+aliases = ["ldgr-programbench"]
+
+[[commands]]
+namespace = "programbench"
+argv = ["ldgr-programbench"]
+aliases = []
+title = "LDGR ProgramBench commands"
+description = "Verify and reproduce bounded historical ProgramBench evidence."
+capabilities = ["dispatch", "help"]
+
+[commands.help]
+usage = "ldgr programbench <verify|reproduce|report> [options]"
+summary = "Revalidate historical on-host validator-visible ProgramBench evidence."
+details = "This is not an official submission or clean-room benchmark surface."
