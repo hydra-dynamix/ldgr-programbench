@@ -37,10 +37,16 @@ jobs:
           cp "target/release/ldgr-programbench${{ matrix.ext }}" "dist/$root/${{ matrix.platform }}/ldgr-programbench${{ matrix.ext }}"
           tar -C dist -czf "dist/$root-${{ matrix.platform }}.tar.gz" "$root"
           archive="dist/$root-${{ matrix.platform }}.tar.gz"
-          digest=$(sha256sum "$archive" | awk '{print $1}')
+          if command -v sha256sum >/dev/null 2>&1; then
+            digest=$(sha256sum "$archive" | awk '{print $1}')
+          else
+            digest=$(shasum -a 256 "$archive" | awk '{print $1}')
+          fi
           printf '%s' "$SIGNING_KEY" > signing.pem
-          openssl pkeyutl -sign -rawin -inkey signing.pem -in "$archive" -out signature.raw
-          signature=$(openssl base64 -A -in signature.raw)
+          openssl_bin="openssl"
+          if [[ "$RUNNER_OS" == "macOS" ]]; then openssl_bin="$(brew --prefix openssl@3)/bin/openssl"; fi
+          "$openssl_bin" pkeyutl -sign -rawin -inkey signing.pem -in "$archive" -out signature.raw
+          signature=$("$openssl_bin" base64 -A -in signature.raw)
           jq -n --arg key_id "$SIGNING_KEY_ID" --arg signature "$signature" '{algorithm:"Ed25519",key_id:$key_id,signature:$signature}' > "$archive.sig"
           jq -n --arg version "$version" --arg platform "${{ matrix.platform }}" --arg digest "$digest" --arg key "$SIGNING_KEY_ID" '{domain:"programbench",primary_namespace:"programbench",title:"ProgramBench historical reproduction adapter",aliases:[],classification:"open_source",source_url:"https://github.com/hydra-dynamix/ldgr-programbench",releases:[{version:$version,channel:"stable",core_compatibility:">=0.1.0, <0.2.0",platforms:[{platform:$platform,asset_url:("https://github.com/hydra-dynamix/ldgr-releases/releases/download/programbench-v"+$version+"/ldgr-programbench-"+$version+"-"+$platform+".tar.gz"),archive_root:("ldgr-programbench-"+$version),binary:"ldgr-programbench",sha256:$digest,signature_url:("https://github.com/hydra-dynamix/ldgr-releases/releases/download/programbench-v"+$version+"/ldgr-programbench-"+$version+"-"+$platform+".tar.gz.sig"),signing_key_id:$key,resource_manifest:"adapter-resources.json"}]}]}' > "dist/$root-${{ matrix.platform }}.index-entry.json"
           rm -f signing.pem signature.raw
