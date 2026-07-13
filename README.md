@@ -1,26 +1,19 @@
 # ldgr-programbench
 
-`ldgr-programbench` is reserved for the public ProgramBench-facing LDGR integration slice.
+`ldgr-programbench` is the open, narrow reproduction adapter for four historical LDGR-assisted ProgramBench runs. It verifies retained custody, reruns frozen submissions under the current on-host validator-visible harness, records raw and LDGR evidence, and produces bounded reports.
 
-The initial public release is intentionally small. Use the main LDGR tools directly while this repository grows concrete ProgramBench adapter commands, fixtures, and workflow documentation.
-
-## Current scope
-
-- Public home for future ProgramBench/LDGR integration work.
-- Narrow benchmark-facing examples and scripts once they are ready.
-- No separate adapter binary is released from this repository yet.
-
-## Start with LDGR
+It is not an official benchmark submission, a clean-room run, an independent evaluation, or a score suitable for model ranking.
 
 ```sh
-cargo install --git https://github.com/hydra-dynamix/ldgr-core
-cargo install --git https://github.com/hydra-dynamix/agentctl
+ldgr adapter install programbench
+ldgr programbench verify --archive-root /path/to/20260613-archive
+ldgr programbench reproduce \
+  --archive-root /path/to/20260613-archive \
+  --benchmarks-root /path/to/benchmarks \
+  --output-root /path/to/new-evidence
+ldgr programbench report --results /path/to/new-evidence/results.json
 ```
 
-Or use the integration installer:
+The four retained valid non-cleanroom runs are Hyperfine, Code Minimap, Brotli, and Nomino. Invalidated runs remain visible in the classification report.
 
-```sh
-git clone https://github.com/hydra-dynamix/ldgr
-cd ldgr
-./install.sh
-```
+Install the bundle directly for local development with `ldgr-programbench adapter install --install-root <path>`. Core’s adapter installer is the canonical distribution path.

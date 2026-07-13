@@ -1,0 +1,5 @@
+{"schema_version":1,"resources":[
+  {"kind":"skill","harnesses":["pi","codex","claude","openclaw"],"source":"skills/programbench-reproduction","destination":"programbench-reproduction"},
+  {"kind":"extension","harnesses":["pi"],"source":"extensions/ldgr-programbench.ts","destination":"ldgr-programbench.ts"},
+  {"kind":"command","harnesses":["claude","openclaw"],"source":"commands/ldgr-programbench.md","destination":"ldgr-programbench.md"}
+]}
