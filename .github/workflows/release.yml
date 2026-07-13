@@ -23,7 +23,7 @@ jobs:
       SIGNING_KEY: ${{ secrets.LDGR_RELEASE_SIGNING_KEY_PEM }}
       SIGNING_KEY_ID: ${{ vars.LDGR_RELEASE_SIGNING_KEY_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test --locked && cargo build --locked --release
       - name: Materialize and package
