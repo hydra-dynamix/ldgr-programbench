@@ -11,6 +11,7 @@ const LEAKAGE_RULE: &str = include_str!("../docs/historical/leakage-rule.md");
 const CONTRACT: &str = include_str!("../docs/historical/reproduction-contract.md");
 const CLEANROOM_BOUNDARY: &str = include_str!("../docs/historical/cleanroom-boundary.md");
 const ADAPTER: &str = include_str!("../adapter.toml");
+const ADAPTER_DATABASE_CONTRACT: &str = include_str!("../adapter-database-contract.json");
 const RESOURCES: &str = include_str!("../adapter-resources.json");
 const SKILL: &str = include_str!("../skills/programbench-reproduction/SKILL.md");
 const EXTENSION: &str = include_str!("../extensions/ldgr-programbench.ts");
@@ -142,6 +143,7 @@ fn write(path: &Path, body: &[u8]) -> Result<(), String> {
 fn install(root: &Path, print_path: bool) -> Result<(), String> {
     for (path, body) in [
         ("adapter.toml", ADAPTER),
+        ("adapter-database-contract.json", ADAPTER_DATABASE_CONTRACT),
         ("adapter-resources.json", RESOURCES),
         ("skills/programbench-reproduction/SKILL.md", SKILL),
         ("extensions/ldgr-programbench.ts", EXTENSION),

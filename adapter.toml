@@ -1,7 +1,7 @@
 [adapter]
 slug = "programbench"
 title = "ProgramBench historical reproduction adapter"
-core_version = "0.1"
+core_version = "generated"
 aliases = ["ldgr-programbench"]
 
 [profile]
