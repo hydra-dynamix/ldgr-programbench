@@ -13,9 +13,6 @@ const CLEANROOM_BOUNDARY: &str = include_str!("../docs/historical/cleanroom-boun
 const ADAPTER: &str = include_str!("../adapter.toml");
 const ADAPTER_DATABASE_CONTRACT: &str = include_str!("../adapter-database-contract.json");
 const RESOURCES: &str = include_str!("../adapter-resources.json");
-const SKILL: &str = include_str!("../skills/programbench-reproduction/SKILL.md");
-const EXTENSION: &str = include_str!("../extensions/ldgr-programbench.ts");
-const HARNESS_COMMAND: &str = include_str!("../commands/ldgr-programbench.md");
 
 #[derive(Parser)]
 #[command(
@@ -145,9 +142,6 @@ fn install(root: &Path, print_path: bool) -> Result<(), String> {
         ("adapter.toml", ADAPTER),
         ("adapter-database-contract.json", ADAPTER_DATABASE_CONTRACT),
         ("adapter-resources.json", RESOURCES),
-        ("skills/programbench-reproduction/SKILL.md", SKILL),
-        ("extensions/ldgr-programbench.ts", EXTENSION),
-        ("commands/ldgr-programbench.md", HARNESS_COMMAND),
         ("docs/historical/source-manifest.json", SOURCE_MANIFEST),
         ("docs/historical/classifications.json", CLASSIFICATIONS),
         ("docs/historical/leakage-rule.md", LEAKAGE_RULE),
@@ -433,9 +427,6 @@ mod tests {
         for p in [
             "adapter.toml",
             "adapter-resources.json",
-            "skills/programbench-reproduction/SKILL.md",
-            "extensions/ldgr-programbench.ts",
-            "commands/ldgr-programbench.md",
         ] {
             assert!(t.path().join(p).is_file(), "{p}");
         }

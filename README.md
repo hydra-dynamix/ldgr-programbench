@@ -16,4 +16,10 @@ ldgr programbench report --results /path/to/new-evidence/results.json
 
 The four retained valid non-cleanroom runs are Hyperfine, Code Minimap, Brotli, and Nomino. Invalidated runs remain visible in the classification report.
 
+For website and launch-copy wording, use the bounded claim in
+[`docs/marketing-claim-boundary.md`](docs/marketing-claim-boundary.md). In
+particular, these four historical reproductions must not be presented as an
+official 4/200 leaderboard score or directly ranked against clean-room,
+generic-harness results.
+
 Install the bundle directly for local development with `ldgr-programbench adapter install --install-root <path>`. Core’s adapter installer is the canonical distribution path.
