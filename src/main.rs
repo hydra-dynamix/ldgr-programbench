@@ -1,3 +1,5 @@
+mod telemetry;
+
 use clap::{Parser, Subcommand};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -215,7 +217,47 @@ fn reproduce(
     out: &Path,
     runner: Option<&str>,
 ) -> Result<(), String> {
+    let mut sequence = telemetry::ProgramBenchReproductionTelemetry::begin_running();
+    let result = reproduce_workflow(archive, benchmarks, out, runner, &mut sequence);
+    finish_reproduction_sequence(&mut sequence, &result);
+    match result {
+        Ok(telemetry::ProgramBenchReproductionTerminal::CompletedPositive) => Ok(()),
+        Ok(telemetry::ProgramBenchReproductionTerminal::CompletedNegative) => {
+            Err("one or more reproduction commands failed; raw evidence was retained".into())
+        }
+        Ok(telemetry::ProgramBenchReproductionTerminal::CompletedInconclusive) => Err(
+            "no valid non-cleanroom reproduction runs were available; evidence was retained".into(),
+        ),
+        Ok(telemetry::ProgramBenchReproductionTerminal::OperationalFailure) => {
+            Err("reproduction stopped by operational failure".into())
+        }
+        Ok(telemetry::ProgramBenchReproductionTerminal::Cancelled) => {
+            Err("reproduction was cancelled".into())
+        }
+        Err(error) => Err(error),
+    }
+}
+
+fn finish_reproduction_sequence(
+    sequence: &mut telemetry::ProgramBenchReproductionTelemetry,
+    result: &Result<telemetry::ProgramBenchReproductionTerminal, String>,
+) {
+    let terminal = result
+        .as_ref()
+        .copied()
+        .unwrap_or(telemetry::ProgramBenchReproductionTerminal::OperationalFailure);
+    sequence.finish(terminal);
+}
+
+fn reproduce_workflow(
+    archive: &Path,
+    benchmarks: &Path,
+    out: &Path,
+    runner: Option<&str>,
+    sequence: &mut telemetry::ProgramBenchReproductionTelemetry,
+) -> Result<telemetry::ProgramBenchReproductionTerminal, String> {
     verify(archive)?;
+    sequence.record_step(telemetry::ProgramBenchReproductionStep::CustodyVerified);
     fs::create_dir_all(out.join("runs")).map_err(|e| e.to_string())?;
     let environment = serde_json::json!({"schema_version":1,"os":std::env::consts::OS,"arch":std::env::consts::ARCH,"archive_root":archive,"benchmarks_root":benchmarks,"limitations":["on_host","validator_visible","not_cleanroom","not_official_submission"]});
     write(
@@ -225,6 +267,7 @@ fn reproduce(
     let ldgr_db = out.join("ldgr/ldgr.db");
     let ldgr_artifacts = out.join("ldgr/artifacts");
     ldgr_command(&ldgr_db, &ldgr_artifacts, &["init"])?;
+    sequence.record_step(telemetry::ProgramBenchReproductionStep::ReproductionPrepared);
     let mut results = Vec::new();
     for run in valid_runs()? {
         let source = source_instance_dir(archive, &run.instance);
@@ -281,19 +324,30 @@ fn reproduce(
             &target,
         )?;
     }
+    sequence.record_step(telemetry::ProgramBenchReproductionStep::AttemptsRecorded);
     write(
         &out.join("results.json"),
         serde_json::to_vec_pretty(&results).unwrap().as_slice(),
     )?;
     write(&out.join("limitations.md"), b"# Limitations\n\nThis reproduction is on-host and validator-visible. It is not an official score, submission, clean-room run, or independent benchmark.\n")?;
+    sequence.record_step(telemetry::ProgramBenchReproductionStep::EvidenceFinalized);
     println!(
-        "reproduction_runs=4 results={}",
+        "reproduction_runs={} results={}",
+        results.len(),
         out.join("results.json").display()
     );
-    if results.iter().all(|r| r.status == "completed") {
-        Ok(())
+    Ok(reproduction_terminal_for_results(&results))
+}
+
+fn reproduction_terminal_for_results(
+    results: &[ReproductionResult],
+) -> telemetry::ProgramBenchReproductionTerminal {
+    if results.is_empty() {
+        telemetry::ProgramBenchReproductionTerminal::CompletedInconclusive
+    } else if results.iter().all(|r| r.status == "completed") {
+        telemetry::ProgramBenchReproductionTerminal::CompletedPositive
     } else {
-        Err("one or more reproduction commands failed; raw evidence was retained".into())
+        telemetry::ProgramBenchReproductionTerminal::CompletedNegative
     }
 }
 
@@ -424,11 +478,38 @@ mod tests {
     fn installer_materializes_every_typed_resource() {
         let t = tempfile::tempdir().unwrap();
         install(t.path(), false).unwrap();
-        for p in [
-            "adapter.toml",
-            "adapter-resources.json",
-        ] {
+        for p in ["adapter.toml", "adapter-resources.json"] {
             assert!(t.path().join(p).is_file(), "{p}");
+        }
+    }
+
+    #[test]
+    fn reproduction_terminal_mapping_preserves_runner_failures_as_completed_negative() {
+        assert_eq!(
+            reproduction_terminal_for_results(&[]),
+            telemetry::ProgramBenchReproductionTerminal::CompletedInconclusive
+        );
+        assert_eq!(
+            reproduction_terminal_for_results(&[reproduction_result("completed")]),
+            telemetry::ProgramBenchReproductionTerminal::CompletedPositive
+        );
+        assert_eq!(
+            reproduction_terminal_for_results(&[
+                reproduction_result("completed"),
+                reproduction_result("failed"),
+            ]),
+            telemetry::ProgramBenchReproductionTerminal::CompletedNegative
+        );
+    }
+
+    fn reproduction_result(status: &str) -> ReproductionResult {
+        ReproductionResult {
+            instance: "redacted-instance".to_string(),
+            status: status.to_string(),
+            command: "redacted-runner".to_string(),
+            exit_code: Some(if status == "completed" { 0 } else { 1 }),
+            historical_eval_sha256: "0".repeat(64),
+            current_eval_sha256: None,
         }
     }
 }
