@@ -4,7 +4,11 @@
 
 ## Current implementation state
 
-The repository now contains the open `ldgr-programbench` adapter binary, canonical `ldgr programbench` domain, typed harness resources, custody verifier, frozen historical classifications, on-host reproduction command, and bounded report command. Commercial benchmark automation remains outside this repository.
+The repository contains the open `ldgr-programbench` adapter binary, canonical
+`ldgr programbench` domain, typed harness resources, a user-configured on-host
+attempt workflow, result verification/reporting, a separate historical custody
+verifier, and frozen historical classifications. Commercial benchmark
+automation remains outside this repository.
 
 This keeps the public proof slice honest: anything documented here must be runnable with open LDGR surfaces or explicitly marked as planned.
 

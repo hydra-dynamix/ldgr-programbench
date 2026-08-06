@@ -75,9 +75,10 @@ The authoritative local evidence chain is:
    digests;
 4. `docs/historical/reproduction-contract.md` — bounded on-host reproduction
    conditions;
-5. `ldgr programbench verify`, `reproduce`, and `report` — verification,
-   re-execution, and report surfaces.
+5. `ldgr programbench reproduce`, `verify`, and `report` — new attempt,
+   evaluation verification, and report surfaces.
 
-The retained archives and benchmark harness are deliberately not copied into
-this public repository. Their roots are caller-supplied to the reproduction
-commands.
+The retained historical archives are deliberately not copied into this public
+repository and are used only by the separate `custody` command. New attempts
+prepare the selected public ProgramBench task and local folder structure
+without requiring a completed historical run.

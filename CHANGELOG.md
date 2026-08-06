@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+## [0.1.4] - 2026-08-06
+
+### Added
+
+- Add `setup` to prepare the local ProgramBench tools, task image, workspace,
+  default folder layout, and user-configured harness plan.
+- Add an end-to-end `reproduce` workflow that invokes the user's selected LDGR
+  harness through `agentctl`, packages the candidate, evaluates it with
+  ProgramBench, and records LDGR evidence.
+- Add result-oriented `verify` and `report` commands with newest-run defaults,
+  human-readable output, and JSON output.
+
+### Changed
+
+- Make `--benchmark-root` canonical and accept `--benchmarks-root` as a visible
+  compatibility alias.
+- Remove historical archives and completed result files from the normal
+  reproduction inputs; historical digest checking now lives under `custody`.
+- Default reproduction to the current directory, one bounded Hyperfine task,
+  the user's configured default harness, and timestamped local output.
+
 ## [0.1.1] - 2026-07-05
 
 ### Added
