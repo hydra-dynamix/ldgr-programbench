@@ -1,4 +1,4 @@
-#![cfg(unix)]
+#![cfg(all(unix, target_arch = "x86_64"))]
 
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
