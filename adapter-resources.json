@@ -7,8 +7,8 @@
         "pi",
         "codex"
       ],
-      "source": "docs/historical/reproduction-contract.md",
-      "destination": "ldgr-programbench-reproduction.md"
+      "source": "docs/programbench-run.md",
+      "destination": "ldgr-programbench-run.md"
     }
   ]
 }

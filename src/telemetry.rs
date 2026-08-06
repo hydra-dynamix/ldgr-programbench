@@ -68,7 +68,7 @@ pub(crate) const PROGRAMBENCH_REPRODUCTION_V1: NumericalProtocol = NumericalProt
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum ProgramBenchReproductionStep {
-    CustodyVerified,
+    InputsPrepared,
     ReproductionPrepared,
     AttemptsRecorded,
     EvidenceFinalized,
@@ -77,7 +77,7 @@ pub(crate) enum ProgramBenchReproductionStep {
 impl ProgramBenchReproductionStep {
     const fn state_code(self) -> StateCode {
         match self {
-            Self::CustodyVerified => PROGRAMBENCH_CUSTODY_VERIFIED,
+            Self::InputsPrepared => PROGRAMBENCH_CUSTODY_VERIFIED,
             Self::ReproductionPrepared => PROGRAMBENCH_REPRODUCTION_PREPARED,
             Self::AttemptsRecorded => PROGRAMBENCH_ATTEMPTS_RECORDED,
             Self::EvidenceFinalized => PROGRAMBENCH_EVIDENCE_FINALIZED,
@@ -273,7 +273,7 @@ mod tests {
         enable(home.path())?;
 
         let mut telemetry = ProgramBenchReproductionTelemetry::begin_running_at(home.path());
-        telemetry.record_step(ProgramBenchReproductionStep::CustodyVerified);
+        telemetry.record_step(ProgramBenchReproductionStep::InputsPrepared);
         telemetry.record_step(ProgramBenchReproductionStep::ReproductionPrepared);
         telemetry.record_step(ProgramBenchReproductionStep::AttemptsRecorded);
         telemetry.record_step(ProgramBenchReproductionStep::EvidenceFinalized);
