@@ -57,6 +57,7 @@ workspace=""
 while (($#)); do
   if [[ "$1" == --cwd ]]; then workspace="$2"; shift 2; else shift; fi
 done
+printf 'success\n' > "$workspace/.ldgr/fake-run-status"
 printf '#!/usr/bin/env bash\nprintf fixture\\n' > "$workspace/compile.sh"
 chmod +x "$workspace/compile.sh"
 printf 'candidate prepared by configured harness\n'
@@ -90,6 +91,14 @@ while (($#)); do
     work) exit 0 ;;
     run)
       if [[ "${2:-}" == start ]]; then printf 'started run 1\n'; fi
+      if [[ "${2:-}" == show ]]; then
+        status="$(cat .ldgr/fake-run-status 2>/dev/null || printf running)"
+        printf '{"status":"%s"}\n' "$status"
+      fi
+      if [[ "${2:-}" == close && -f .ldgr/fake-run-status ]]; then
+        printf 'error: run 1 is already success\n' >&2
+        exit 1
+      fi
       exit 0
       ;;
     artifact|validation|observation|observe|decision) exit 0 ;;
@@ -119,9 +128,11 @@ done
         String::from_utf8_lossy(&output.stderr)
     );
     let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("setup: task image already available:"));
     assert!(stdout.contains("harness: pi"));
     assert!(stdout.contains("agentctl profile: ldgr-loop-pi"));
     assert!(stdout.contains("tests: 2 passed=1 failed=1 other=0"));
+    assert!(stdout.contains("already closed by harness [success]"));
     assert!(stdout.contains("Attempt complete"));
 
     let run_root = fs::read_dir(root.join("programbench-runs"))

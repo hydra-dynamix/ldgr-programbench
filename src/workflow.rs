@@ -388,22 +388,42 @@ fn preflight(plan: &SetupPlan) -> Result<(), String> {
             std::env::consts::ARCH
         ));
     }
+    progress("checking Docker daemon");
     run_checked(
         Command::new("docker").arg("version"),
         "Docker is unavailable",
     )?;
+    progress("checking agentctl configuration");
     run_checked(
         Command::new("agentctl").args(["config", "check"]),
         "agentctl configuration is unavailable",
     )?;
-    run_checked(
-        Command::new("uvx").args(["programbench", "--help"]),
+    progress("resolving ProgramBench evaluator through uvx (first use may download it)");
+    run_checked_visible(
+        Command::new("uvx")
+            .args(["programbench", "--help"])
+            .stdout(Stdio::null()),
         "ProgramBench could not be installed/resolved through uvx",
     )?;
-    run_checked(
-        Command::new("docker").args(["pull", "--platform", "linux/amd64", &plan.image]),
-        "ProgramBench task image could not be pulled",
-    )?;
+    let image_is_local = Command::new("docker")
+        .args(["image", "inspect", &plan.image])
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map_err(|error| format!("inspect ProgramBench task image {}: {error}", plan.image))?
+        .success();
+    if image_is_local {
+        progress(&format!("task image already available: {}", plan.image));
+    } else {
+        progress(&format!(
+            "pulling task image {} (Docker progress follows)",
+            plan.image
+        ));
+        run_checked_visible(
+            Command::new("docker").args(["pull", "--platform", "linux/amd64", &plan.image]),
+            "ProgramBench task image could not be pulled",
+        )?;
+    }
     Ok(())
 }
 
@@ -724,23 +744,47 @@ fn finish_ldgr_attempt(
             },
         ],
     )?;
-    ldgr_command(
+    let run_status = ldgr_run_status(workspace, ledger)?;
+    if run_status == "running" {
+        ldgr_command(
+            workspace,
+            &ledger.db,
+            &ledger.artifacts,
+            &[
+                "run",
+                "close",
+                &ledger.run_id,
+                "--status",
+                if completed { "success" } else { "failed" },
+                "--outcome",
+                "stop",
+                "--rationale",
+                "The bounded ProgramBench demonstration attempt is complete; inspect verification evidence before interpreting the result.",
+            ],
+        )?;
+    } else {
+        println!(
+            "  LDGR run {} already closed by harness [{}]; preserving that status",
+            ledger.run_id, run_status
+        );
+    }
+    Ok(())
+}
+
+fn ldgr_run_status(workspace: &Path, ledger: &LedgerRun) -> Result<String, String> {
+    let output = ldgr_command(
         workspace,
         &ledger.db,
         &ledger.artifacts,
-        &[
-            "run",
-            "close",
-            &ledger.run_id,
-            "--status",
-            if completed { "success" } else { "failed" },
-            "--outcome",
-            "stop",
-            "--rationale",
-            "The bounded ProgramBench demonstration attempt is complete; inspect verification evidence before interpreting the result.",
-        ],
+        &["run", "show", &ledger.run_id, "--json"],
     )?;
-    Ok(())
+    let value: Value = serde_json::from_str(&output)
+        .map_err(|error| format!("parse LDGR run {} status: {error}", ledger.run_id))?;
+    value
+        .get("status")
+        .and_then(Value::as_str)
+        .map(str::to_owned)
+        .ok_or_else(|| format!("LDGR run {} JSON omitted status", ledger.run_id))
 }
 
 fn ldgr_command(
@@ -984,6 +1028,22 @@ fn run_checked(command: &mut Command, context: &str) -> Result<Output, String> {
         ));
     }
     Ok(output)
+}
+
+fn run_checked_visible(command: &mut Command, context: &str) -> Result<(), String> {
+    let rendered = format!("{command:?}");
+    let status = command
+        .status()
+        .map_err(|error| format!("{context}: {rendered}: {error}"))?;
+    if !status.success() {
+        return Err(format!("{context}: {rendered} exited with {status}"));
+    }
+    Ok(())
+}
+
+fn progress(message: &str) {
+    println!("  setup: {message}");
+    let _ = std::io::stdout().flush();
 }
 
 fn write_json(path: &Path, value: &impl Serialize) -> Result<(), String> {
