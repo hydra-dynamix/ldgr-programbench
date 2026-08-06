@@ -1,4 +1,14 @@
 {
   "schema_version": 1,
-  "resources": []
+  "resources": [
+    {
+      "kind": "prompt",
+      "harnesses": [
+        "pi",
+        "codex"
+      ],
+      "source": "docs/historical/reproduction-contract.md",
+      "destination": "ldgr-programbench-reproduction.md"
+    }
+  ]
 }
