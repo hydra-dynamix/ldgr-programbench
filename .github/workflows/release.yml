@@ -72,5 +72,7 @@ jobs:
           set -euo pipefail
           version=$(cargo metadata --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["packages"][0]["version"])')
           tag="programbench-v$version"
-          gh release view "$tag" --repo "$RELEASE_REPO" >/dev/null 2>&1 || gh release create "$tag" --repo "$RELEASE_REPO" --title "ldgr-programbench v$version" --notes "Runs one bounded ProgramBench attempt with the user's configured LDGR harness. On-host and validator-visible; not an official or clean-room benchmark."
+          if ! gh release view "$tag" --repo "$RELEASE_REPO" >/dev/null 2>&1; then
+            gh release create "$tag" --repo "$RELEASE_REPO" --title "ldgr-programbench v$version" --notes "Runs one bounded ProgramBench attempt with the user's configured LDGR harness. On-host and validator-visible; not an official or clean-room benchmark." || gh release view "$tag" --repo "$RELEASE_REPO" >/dev/null
+          fi
           gh release upload "$tag" --repo "$RELEASE_REPO" dist/*-${{ matrix.platform }}* --clobber
