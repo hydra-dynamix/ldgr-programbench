@@ -8,6 +8,9 @@ permissions:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ldgr-programbench
     strategy:
       fail-fast: false
       matrix:
@@ -24,6 +27,13 @@ jobs:
       SIGNING_KEY_ID: ${{ vars.LDGR_RELEASE_SIGNING_KEY_ID }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          path: ldgr-programbench
+      - uses: actions/checkout@v5
+        with:
+          repository: hydra-dynamix/ldgr-core
+          ref: 31b8a2e7bfcf1791fe9d1b7c607de74e3d94e461
+          path: ldgr-core
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test --locked && cargo build --locked --release
       - name: Materialize and package
@@ -52,9 +62,9 @@ jobs:
           rm -f signing.pem signature.raw
       - uses: anchore/sbom-action@v0
         with:
-          path: dist
+          path: ldgr-programbench/dist
           format: spdx-json
-          output-file: dist/programbench-${{ matrix.platform }}.sbom.spdx.json
+          output-file: ldgr-programbench/dist/programbench-${{ matrix.platform }}.sbom.spdx.json
           upload-artifact: false
       - name: Publish central release
         shell: bash
