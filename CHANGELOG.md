@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## [0.1.5] - 2026-08-06
+
+### Fixed
+
+- Preserve a terminal LDGR run status when the configured harness already
+  closed the run instead of failing while attempting a duplicate close.
+- Print and flush each setup preflight step, show dependency download output,
+  and skip the task-image pull when the image is already available locally.
+
 ## [0.1.4] - 2026-08-06
 
 ### Added
