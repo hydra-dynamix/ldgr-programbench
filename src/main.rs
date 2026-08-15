@@ -14,7 +14,7 @@ const CONTRACT: &str = include_str!("../docs/historical/reproduction-contract.md
 const CLEANROOM_BOUNDARY: &str = include_str!("../docs/historical/cleanroom-boundary.md");
 const RUN_GUIDE: &str = include_str!("../docs/programbench-run.md");
 const ADAPTER: &str = include_str!("../adapter.toml");
-const ADAPTER_DATABASE_CONTRACT: &str = include_str!("../adapter-database-contract.json");
+const ADAPTER_COMPATIBILITY: &str = include_str!("../adapter-compatibility.json");
 const RESOURCES: &str = include_str!("../adapter-resources.json");
 
 const ROOT_HELP: &str = "Examples:\n  ldgr programbench setup\n  ldgr programbench reproduce\n  ldgr programbench reproduce --benchmark-root ~/repos/programbench --instance sharkdp__hyperfine.327d5f4\n  ldgr programbench verify\n  ldgr programbench report\n\n`reproduce` runs one bounded ProgramBench attempt by default. It prepares the benchmark workspace, invokes the default harness from ~/.ldgr/config.toml through agentctl, packages the candidate, runs ProgramBench evaluation, and records LDGR evidence. This is an on-host demonstration, not an official or clean-room leaderboard submission.";
@@ -224,7 +224,7 @@ fn write(path: &Path, body: &[u8]) -> Result<(), String> {
 fn install(root: &Path, print_path: bool) -> Result<(), String> {
     for (path, body) in [
         ("adapter.toml", ADAPTER),
-        ("adapter-database-contract.json", ADAPTER_DATABASE_CONTRACT),
+        ("adapter-compatibility.json", ADAPTER_COMPATIBILITY),
         ("adapter-resources.json", RESOURCES),
         ("docs/programbench-run.md", RUN_GUIDE),
         ("docs/historical/source-manifest.json", SOURCE_MANIFEST),
@@ -325,11 +325,13 @@ mod tests {
         install(temp.path(), false).unwrap();
         for path in [
             "adapter.toml",
+            "adapter-compatibility.json",
             "adapter-resources.json",
             "docs/programbench-run.md",
             "docs/historical/reproduction-contract.md",
         ] {
             assert!(temp.path().join(path).is_file(), "missing {path}");
         }
+        assert!(!temp.path().join("adapter-database-contract.json").exists());
     }
 }
