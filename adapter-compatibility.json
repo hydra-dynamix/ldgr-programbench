@@ -1,0 +1,1 @@
+{"adapter":"programbench","compatibility":{"adapter_protocol_epoch":1,"central_components":[],"minimum_core_schema":5,"required_core_capabilities":["telemetry.v1","work.v1"]},"format":"ldgr.adapter-compatibility.v2","local_stores":[]}

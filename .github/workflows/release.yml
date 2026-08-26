@@ -44,6 +44,7 @@ jobs:
           root="ldgr-programbench-${version}"
           mkdir -p "dist/$root/${{ matrix.platform }}"
           cargo run --locked --release -- adapter install --install-root "dist/$root"
+          cmp adapter-compatibility.json "dist/$root/adapter-compatibility.json"
           cp "target/release/ldgr-programbench${{ matrix.ext }}" "dist/$root/${{ matrix.platform }}/ldgr-programbench${{ matrix.ext }}"
           tar -C dist -czf "dist/$root-${{ matrix.platform }}.tar.gz" "$root"
           archive="dist/$root-${{ matrix.platform }}.tar.gz"
@@ -58,7 +59,17 @@ jobs:
           "$openssl_bin" pkeyutl -sign -rawin -inkey signing.pem -in "$archive" -out signature.raw
           signature=$("$openssl_bin" base64 -A -in signature.raw)
           jq -n --arg key_id "$SIGNING_KEY_ID" --arg signature "$signature" '{algorithm:"Ed25519",key_id:$key_id,signature:$signature}' > "$archive.sig"
-          jq -n --arg version "$version" --arg platform "${{ matrix.platform }}" --arg digest "$digest" --arg key "$SIGNING_KEY_ID" --arg binary "ldgr-programbench${{ matrix.ext }}" '{domain:"programbench",primary_namespace:"programbench",title:"ProgramBench on-host run adapter",aliases:[],classification:"open_source",source_url:"https://github.com/hydra-dynamix/ldgr-programbench",releases:[{version:$version,channel:"stable",core_compatibility:">=0.1.13, <0.1.14",platforms:[{platform:$platform,asset_url:("https://github.com/hydra-dynamix/ldgr-releases/releases/download/programbench-v"+$version+"/ldgr-programbench-"+$version+"-"+$platform+".tar.gz"),archive_root:("ldgr-programbench-"+$version),binary:$binary,sha256:$digest,signature_url:("https://github.com/hydra-dynamix/ldgr-releases/releases/download/programbench-v"+$version+"/ldgr-programbench-"+$version+"-"+$platform+".tar.gz.sig"),signing_key_id:$key,resource_manifest:"adapter-resources.json"}]}]}' > "dist/$root-${{ matrix.platform }}.index-entry.json"
+          python3 - "dist/$root-${{ matrix.platform }}.index-entry.json" "$version" "${{ matrix.platform }}" "$digest" "ldgr-programbench${{ matrix.ext }}" <<'PY'
+          import hashlib,json,pathlib,sys,os
+          output,version,platform,digest,binary=sys.argv[1:]
+          sidecar_path=pathlib.Path("adapter-compatibility.json"); sidecar=json.loads(sidecar_path.read_text())
+          compatibility=sidecar["compatibility"]
+          fingerprint="sha256:"+hashlib.sha256(json.dumps(compatibility,sort_keys=True,separators=(",", ":")).encode()).hexdigest()
+          base=f"https://github.com/hydra-dynamix/ldgr-releases/releases/download/programbench-v{version}/ldgr-programbench-{version}-{platform}.tar.gz"
+          product={"domain":"programbench","primary_namespace":"programbench","title":"ProgramBench on-host run adapter","aliases":[],"classification":"open_source","source_url":"https://github.com/hydra-dynamix/ldgr-programbench","releases":[{"version":version,"channel":"stable","compatibility":compatibility,"compatibility_sha256":fingerprint,"platforms":[{"platform":platform,"asset_url":base,"archive_root":f"ldgr-programbench-{version}","binary":binary,"sha256":digest,"signature_url":base+".sig","signing_key_id":os.environ["SIGNING_KEY_ID"],"resource_manifest":"adapter-resources.json"}]}]}
+          fragment={"format":"ldgr.adapter-release-fragment.v2","product":product,"sidecar_sha256":"sha256:"+hashlib.sha256(sidecar_path.read_bytes()).hexdigest()}
+          pathlib.Path(output).write_text(json.dumps(fragment,sort_keys=True,indent=2)+"\n")
+          PY
           rm -f signing.pem signature.raw
       - uses: anchore/sbom-action@v0
         with:
@@ -73,6 +84,6 @@ jobs:
           version=$(cargo metadata --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["packages"][0]["version"])')
           tag="programbench-v$version"
           if ! gh release view "$tag" --repo "$RELEASE_REPO" >/dev/null 2>&1; then
-            gh release create "$tag" --repo "$RELEASE_REPO" --title "ldgr-programbench v$version" --notes "Runs one bounded ProgramBench attempt with the user's configured LDGR harness. On-host and validator-visible; not an official or clean-room benchmark." || gh release view "$tag" --repo "$RELEASE_REPO" >/dev/null
+            gh release create "$tag" --repo "$RELEASE_REPO" --draft --title "ldgr-programbench v$version" --notes "Compatibility-v2 candidate. Runs one bounded ProgramBench attempt with the user's configured LDGR harness; publish only through the ldgr-releases catalog gate." || gh release view "$tag" --repo "$RELEASE_REPO" >/dev/null
           fi
           gh release upload "$tag" --repo "$RELEASE_REPO" dist/*-${{ matrix.platform }}* --clobber
